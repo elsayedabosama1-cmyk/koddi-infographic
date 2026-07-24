@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أزمة العداد الكودي - المقارنة الشاملة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .arabic {
+            font-family: 'Droid Arabic Kufi', 'Arial', sans-serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== HEADER / THESIS ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1.2; }
+        }
+
+        .header > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #ef4444;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .header .tagline {
+            font-size: 1.3em;
+            color: #fbbf24;
+            font-weight: 500;
+        }
+
+        .header .subtext {
+            font-size: 0.95em;
+            color: #cbd5e1;
+            margin-top: 20px;
+            line-height: 1.8;
+        }
+
+        /* ===== COMPARISON SECTION ===== */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .card.legal {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, #1e293b 100%);
+        }
+
+        .card.koddi {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, #1e293b 100%);
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card.legal .card-title {
+            color: #4ade80;
+        }
+
+        .card.koddi .card-title {
+            color: #ef4444;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card.legal .badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .card.koddi .badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .tier {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card.legal .tier {
+            border-right-color: #22c55e;
+        }
+
+        .card.koddi .tier {
+            border-right-color: #ef4444;
+        }
+
+        .tier-label {
+            font-size: 0.9em;
+            color: #cbd5e1;
+        }
+
+        .tier-price {
+            font-size: 1.4em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card.legal .tier-price {
+            color: #86efac;
+        }
+
+        .card.koddi .tier-price {
+            color: #fca5a5;
+        }
+
+        .highlight {
+            background: rgba(239, 68, 68, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #fca5a5;
+        }
+
+        /* ===== CALCULATOR ===== */
+        .calculator {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .calc-title {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #fbbf24;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .value-display {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fbbf24;
+            min-width: 120px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #334155;
+        }
+
+        .result-box {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.95em;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        .result-price {
+            font-size: 2.2em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+
+        .legal-result {
+            color: #86efac;
+        }
+
+        .koddi-result {
+            color: #fca5a5;
+        }
+
+        .difference {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .diff-label {
+            font-size: 0.9em;
+            color: #fca5a5;
+            margin-bottom: 8px;
+        }
+
+        .diff-amount {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #ef4444;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diff-percent {
+            font-size: 1.1em;
+            color: #fca5a5;
+            margin-top: 8px;
+        }
+
+        /* ===== IMPACT SECTION ===== */
+        .impact {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .impact-title {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #ef4444;
+        }
+
+        .impact-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .impact-item {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            border-right: 4px solid #ef4444;
+        }
+
+        .impact-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+
+        .impact-text {
+            font-size: 0.95em;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85em;
+            padding: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        @media (max-width: 768px) {
+            .comparison, .impact-list {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER / THESIS -->
+        <div class="header">
+            <h1 class="arabic">أزمة العداد الكودي</h1>
+            <p class="tagline">من الشرائح المتدرجة إلى السعر الموحد العالي</p>
+            <p class="subtext">
+                الحكومة حولت نظام الفواتير للعدادات الكودية من شرائح متغيرة إلى سعر موحد واحد بـ 2.74 جنيه لكل كيلو وات/ساعة.<br>
+                النتيجة: فواتير أعلى بالضعف تقريباً للمنازل محدودة الدخل
+            </p>
+        </div>
+
+        <!-- COMPARISON CARDS -->
+        <div class="comparison">
+            <!-- Legal Meters -->
+            <div class="card legal">
+                <div class="card-title">
+                    <span class="badge">مدعوم</span>
+                    <span class="arabic">العداد القانوني</span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">من 1 إلى 50 كيلو</span>
+                    <span class="tier-price">68 قرش</span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">من 51 إلى 100 كيلو</span>
+                    <span class="tier-price">78 قرش</span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">من 101 إلى 200 كيلو</span>
+                    <span class="tier-price">95 قرش</span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">أكثر من 200 كيلو</span>
+                    <span class="tier-price">130 قرش</span>
+                </div>
+                <p style="color: #86efac; margin-top: 20px; font-size: 0.9em;">✓ يستفيد من نظام الدعم التدرجي</p>
+            </div>
+
+            <!-- Koddi Meters -->
+            <div class="card koddi">
+                <div class="card-title">
+                    <span class="badge">بدون دعم</span>
+                    <span class="arabic">العداد الكودي</span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">أي استهلاك</span>
+                    <span class="tier-price"><span class="highlight">274 قرش</span></span>
+                </div>
+                <div class="tier">
+                    <span class="tier-label">سواء 50 أم 500 كيلو</span>
+                    <span class="tier-price"><span class="highlight">274 قرش</span></span>
+                </div>
+                <p style="color: #fca5a5; margin-top: 30px; font-size: 0.9em;">✗ لا يستفيد من الدعم<br>✗ سعر موحد عالي على كل وحدة</p>
+            </div>
+        </div>
+
+        <!-- CALCULATOR -->
+        <div class="calculator">
+            <h2 class="calc-title arabic">احسب فاتورتك الحقيقية</h2>
+            
+            <div class="input-group">
+                <label class="input-label arabic">استهلاكك الشهري (كيلو وات/ساعة)</label>
+                <div class="input-wrapper">
+                    <input type="range" id="consumption" min="30" max="500" value="150" step="10">
+                    <span class="value-display"><span id="consumptionValue">150</span> كيلو</span>
+                </div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-box">
+                    <div class="result-label arabic">الفاتورة بالعداد القانوني</div>
+                    <div class="result-price legal-result" id="legalPrice">156.00</div>
+                    <div style="font-size: 0.85em; color: #cbd5e1;">جنيه مصري</div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-label arabic">الفاتورة بالعداد الكودي</div>
+                    <div class="result-price koddi-result" id="koddiPrice">411.00</div>
+                    <div style="font-size: 0.85em; color: #cbd5e1;">جنيه مصري</div>
+                </div>
+            </div>
+
+            <div class="difference">
+                <div class="diff-label arabic">الفرق الشهري (خسارة إضافية)</div>
+                <div class="diff-amount" id="difference">255.00 جنيه</div>
+                <div class="diff-percent" id="diffPercent">أنت تدفع أكثر بـ 163%</div>
+            </div>
+        </div>
+
+        <!-- IMPACT SECTION -->
+        <div class="impact">
+            <h2 class="impact-title arabic">التأثير الاقتصادي والاجتماعي</h2>
+            <div class="impact-list">
+                <div class="impact-item">
+                    <div class="impact-number">255 جنيه</div>
+                    <div class="impact-text arabic">زيادة شهرية في الفاتورة (لاستهلاك 150 كيلو) = 3060 جنيه سنوياً</div>
+                </div>
+
+                <div class="impact-item">
+                    <div class="impact-number">163%</div>
+                    <div class="impact-text arabic">نسبة الزيادة تقريباً بين النظامين للاستهلاك المتوسط</div>
+                </div>
+
+                <div class="impact-item">
+                    <div class="impact-number">1.2M</div>
+                    <div class="impact-text arabic">عداد كودي مطبق عليه النظام الجديد وفقاً لوزارة الكهرباء</div>
+                </div>
+
+                <div class="impact-item">
+                    <div class="impact-number">فئات</div>
+                    <div class="impact-text arabic">الأسر محدودة الدخل هي الأكثر تضررًا من هذا القرار</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>بيانات من وزارة الكهرباء والطاقة المتجددة المصرية • يوليو 2026</p>
+            <p>بتوقيت المحلة - تحليل اقتصادي محلي</p>
+        </div>
+    </div>
+
+    <script>
+        const consumption = document.getElementById('consumption');
+        const consumptionValue = document.getElementById('consumptionValue');
+        const legalPrice = document.getElementById('legalPrice');
+        const koddiPrice = document.getElementById('koddiPrice');
+        const difference = document.getElementById('difference');
+        const diffPercent = document.getElementById('diffPercent');
+
+        function calculateLegalPrice(kw) {
+            let price = 0;
+            if (kw <= 50) {
+                price = kw * 0.68;
+            } else if (kw <= 100) {
+                price = 50 * 0.68 + (kw - 50) * 0.78;
+            } else if (kw <= 200) {
+                price = 50 * 0.68 + 50 * 0.78 + (kw - 100) * 0.95;
+            } else {
+                price = 50 * 0.68 + 50 * 0.78 + 100 * 0.95 + (kw - 200) * 1.30;
+            }
+            return price;
+        }
+
+        function calculateKoddiPrice(kw) {
+            return kw * 2.74;
+        }
+
+        function update() {
+            const kwValue = parseInt(consumption.value);
+            consumptionValue.textContent = kwValue;
+
+            const legal = calculateLegalPrice(kwValue);
+            const koddi = calculateKoddiPrice(kwValue);
+            const diff = koddi - legal;
+            const percent = ((diff / legal) * 100).toFixed(0);
+
+            legalPrice.textContent = legal.toFixed(2);
+            koddiPrice.textContent = koddi.toFixed(2);
+            difference.textContent = diff.toFixed(2) + ' جنيه';
+            diffPercent.textContent = `أنت تدفع أكثر بـ ${percent}%`;
+        }
+
+        consumption.addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>
