@@ -164,7 +164,11 @@
       "logo": "photos/women-union.jpg"
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "photo": "photos/mwd9m2v9v1m.jpg"
+    }
+  ],
   "news": [],
   "services": [],
   "mediaNotes": [
@@ -215,7 +219,7 @@
       ]
     }
   ],
-  "version": 4,
+  "version": 5,
   "updated": "2026-11-12",
   "mediaLogo": "photos/media-secretariat.jpg"
 }
