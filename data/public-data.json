@@ -173,8 +173,8 @@
     "لا تُنشر البيانات الحساسة أو التصريحات الرسمية إلا بعد المراجعة والاعتماد وفق التسلسل الحزبي."
   ],
   "social": {
-    "party": "",
-    "deputy": ""
+    "party": "https://www.facebook.com/share/1E6iQNuq5e/",
+    "deputy": "https://www.facebook.com/share/1KN7sMNk7V/"
   },
   "deputyActivity": [
     {
@@ -215,7 +215,7 @@
       ]
     }
   ],
-  "version": 2,
+  "version": 3,
   "updated": "2026-11-12",
   "mediaLogo": "photos/media-secretariat.jpg"
 }
