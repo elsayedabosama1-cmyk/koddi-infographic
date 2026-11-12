@@ -93,11 +93,25 @@ async function gh(method,path,body){
 const b64d=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g,'')),c=>c.charCodeAt(0)));
 const b64e=t=>{const b=new TextEncoder().encode(t);let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(s)};
 
+function norm(d){d.social=d.social||{};d.advisoryCouncil=d.advisoryCouncil||{};['departments','centers','areas','secretariats','deputies','mediaTeam','unions','events','news','services','deputyActivity'].forEach(k=>d[k]=d[k]||[]);return d}
+let BASEK={};
+function snap(d){BASEK={};Object.keys(d).forEach(k=>BASEK[k]=JSON.stringify(d[k]))}
 async function load(){
   const r=await gh('GET','contents/'+FILE+'?ref='+BRANCH);
-  SHA=r.sha;DB=JSON.parse(b64d(r.content));
-  DB.social=DB.social||{};DB.advisoryCouncil=DB.advisoryCouncil||{};
-  ['departments','centers','areas','secretariats','deputies','mediaTeam','unions','events','news','services','deputyActivity'].forEach(k=>DB[k]=DB[k]||[]);
+  SHA=r.sha;DB=norm(JSON.parse(b64d(r.content)));snap(DB);
+}
+async function mergeLatest(){
+  const r=await gh('GET','contents/'+FILE+'?ref='+BRANCH);const th=norm(JSON.parse(b64d(r.content)));
+  const clash=[];
+  new Set([...Object.keys(DB),...Object.keys(th)]).forEach(k=>{
+    if(k==='version'||k==='updated')return;
+    const mine=JSON.stringify(DB[k]),base=BASEK[k],theirs=JSON.stringify(th[k]);
+    const mc=mine!==base,tc=theirs!==base;
+    if(!mc&&tc){if(th[k]===undefined)delete DB[k];else DB[k]=th[k]}
+    else if(mc&&tc&&mine!==theirs)clash.push(k);
+  });
+  DB.version=Math.max(DB.version||0,th.version||0);SHA=r.sha;snap(th);
+  return clash;
 }
 async function login(t){
   TOK=t;busy(true);
@@ -177,10 +191,11 @@ function listEditor(title,obj,k,schema,opts={}){
 /* ---------- tabs ---------- */
 const PERSON=[['name','الاسم'],['role','المنصب / الوصف'],['g','النوع (للقب أستاذ / أستاذة)','g'],['photo','صورة شخصية','photo']];
 const NEWS=[['title','العنوان'],['date','التاريخ (مثال: 12 نوفمبر 2026)'],['body','النص (كل سطر = فقرة)','body'],['photo','صورة','photo'],['url','رابط خارجي (اختياري)']];
-const ENT=[['name','الاسم'],['leader','الأمين / المسؤول'],['g','النوع','g'],['photo','صورة المسؤول','photo'],['notes','ملاحظات','area']];
+const FOLDER=[['name','اسم المجلد'],['icon','الأيقونة','icon'],['items','محتوى المجلد (منشورات)','list',NEWS,true]];
+const ENT=[['name','الاسم'],['leader','الأمين / المسؤول'],['g','النوع','g'],['photo','صورة المسؤول','photo'],['notes','ملاحظات','area'],['folders','المجلدات','list',FOLDER]];
 const TABS=[
  {id:'general',t:'عام'},
- {id:'departments',t:'الأقسام',list:'departments',schema:[...ENT,['news','أخبار القسم','list',NEWS,true]]},
+ {id:'departments',t:'الأقسام',list:'departments',schema:[...ENT,['news','أخبار القسم (تظهر تحت المجلدات)','list',NEWS,true]]},
  {id:'centers',t:'المراكز',list:'centers',schema:ENT},
  {id:'areas',t:'المناطق',list:'areas',schema:[...ENT,['subareas','مناطق فرعية (افصل بفاصلة)','tags']]},
  {id:'secretariats',t:'الأمانات',list:'secretariats',schema:ENT},
@@ -221,15 +236,21 @@ function drawPane(){
 /* ---------- save ---------- */
 async function save(){
   if(!dirty){toast('لا توجد تغييرات للحفظ');return}
-  busy(true);const oldV=DB.version||0;
+  busy(true);
+  const put=()=>{DB.version=(DB.version||0)+1;DB.updated=new Date().toISOString().slice(0,10);return gh('PUT','contents/'+FILE,{message:'Update data (admin panel)',content:b64e(JSON.stringify(DB,null,2)),sha:SHA,branch:BRANCH})};
   try{
-    DB.version=oldV+1;DB.updated=new Date().toISOString().slice(0,10);
-    const r=await gh('PUT','contents/'+FILE,{message:'Update data (admin panel)',content:b64e(JSON.stringify(DB,null,2)),sha:SHA,branch:BRANCH});
-    SHA=r.content.sha;mark(false);toast('تم الحفظ. التغييرات بتظهر في التطبيق خلال دقائق.');
-  }catch(e){
-    DB.version=oldV;
-    if(e.status===409||e.status===422)alert('البيانات اتغيّرت من مكان تاني. حدّث الصفحة وجرّب تاني.');else fail(e);
-  }
+    let r;
+    try{r=await put()}
+    catch(e){
+      if(e.status!==409&&e.status!==422)throw e;
+      DB.version--;
+      const clash=await mergeLatest();
+      if(clash.length&&!confirm('فيه تعديل اتعمل من مكان تاني على نفس الأقسام ('+clash.join('، ')+'). تعديلك هو اللي هيتحفظ. تكمّل؟')){drawPane();busy(false);return}
+      r=await put();
+      drawPane();
+    }
+    SHA=r.content.sha;snap(DB);mark(false);toast('تم الحفظ. التغييرات بتظهر في التطبيق خلال دقائق.');
+  }catch(e){DB.version=Math.max(0,(DB.version||1)-1);fail(e)}
   busy(false);
 }
 $('#go').addEventListener('click',()=>{const t=$('#tok').value.trim();if(t)login(t)});

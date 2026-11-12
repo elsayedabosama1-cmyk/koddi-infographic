@@ -14,7 +14,7 @@ function list(arr,mode){arr=arr||[];if(!arr.length)return `<div class="items">${
   if(mode==='person'){const isT=/^(النائب|د\.)/.test(x.name||'');return pcard(x.role||x.description||'',x.name,'',x.photo,x.g,x.big)}
   if(mode==='plain')return item(x.name||x.title,[x.date,x.place,x.description,x.role].filter(Boolean).join(' — '));
   if(mode==='note')return item(x.name,'',1);
-  if(mode==='dept'&&x.news&&x.news.length)return pcard(x.name,x.leader,`الأخبار (${x.news.length}) ‹`,x.photo,x.g).replace('<div class="pc">',`<div class="pc click" onclick="dept(${i})">`);
+  if(mode&&mode.startsWith('ent:')&&((x.news&&x.news.length)||(x.folders&&x.folders.length))){const parts=[];if((x.folders||[]).length)parts.push(`المجلدات (${x.folders.length})`);if((x.news||[]).length)parts.push(`الأخبار (${x.news.length})`);return pcard(x.name,x.leader,parts.join(' • ')+' ‹',x.photo,x.g).replace('<div class="pc">',`<div class="pc click" onclick="entity('${mode.slice(4)}',${i})">`)}
   return pcard(x.name,x.leader,[x.notes,(x.subareas||[]).join('، ')].filter(Boolean).join(' — '),x.photo,x.g)}).join('')}</div>`}
 function unionOf(k){return DB.unions.find(x=>x.name.includes(k==='youth'?'الشباب':'النسائي'))||{}}
 function tile(ic,t,fn){return `<button class="tile" onclick="${fn}">${icon(ic)}<strong>${t}</strong></button>`}
@@ -24,17 +24,26 @@ function sub(k,w){LAST=()=>sub(k,w);const u=unionOf(k),arr=u[w]||[];const back=`
  render('اللجان',arr.length?`<div class="items">${arr.map(c=>`<div class="pc">${icon(ICONS[c.icon]?c.icon:'layers')}<b>${c.name}</b>${c.leader?`<div class="sub">${titled(c.leader,c.g)}</div>`:''}</div>`).join('')}</div>`:`<div class="items">${empty()}</div>`,back)}
 function show(k){LAST=()=>show(k);let title='',html='';
  if(k==='governor'){title='قيادة المحافظة';html=list([{name:'أمين الحزب بمحافظة الغربية',leader:DB.governorateSecretary,photo:DB.governorPhoto}])}
- else if(k==='departments'){title='الأقسام';html=list(DB.departments,'dept')}
- else if(k==='centers'){title='المراكز';html=list(DB.centers)}
- else if(k==='areas'){title='المناطق';html=list(DB.areas)}
- else if(k==='secretariats'){title='الأمانات';html=list(DB.secretariats)}
+ else if(k==='departments'){title='الأقسام';html=list(DB.departments,'ent:departments')}
+ else if(k==='centers'){title='المراكز';html=list(DB.centers,'ent:centers')}
+ else if(k==='areas'){title='المناطق';html=list(DB.areas,'ent:areas')}
+ else if(k==='secretariats'){title='الأمانات';html=list(DB.secretariats,'ent:secretariats')}
  else if(k==='deputies'){title='نواب الحزب';html=list(DB.deputies,'person')}
  else if(k==='activity'){title='نشاط النائب';html=actList(DB.deputyActivity)}else if(k==='council'){title='المجلس الاستشاري بالغربية';html=list([{name:'رئيس المجلس الاستشاري',leader:DB.advisoryCouncil.chairman,photo:DB.advisoryCouncil.photo}])}
  else if(k==='media'){title='أمانة الإعلام';html=(DB.mediaLogo?`<div class="ulogo">${pic(DB.mediaLogo)}</div>`:'')+list(DB.mediaTeam,'person')+'<div class="section"><h3>ضوابط العمل</h3>'+list((DB.mediaNotes||[]).map(x=>({name:x})),'note')+'</div>'}
  else if(k==='youth'||k==='women'){const u=unionOf(k);title=u.name||'الاتحاد';html=`${u.logo?`<div class="ulogo">${pic(u.logo)}</div>`:''}<div class="grid">${tile('star','القيادات',`sub('${k}','leaders')`)}${tile('layers','اللجان',`sub('${k}','committees')`)}</div>`}
  else{const key=k==='events'?'events':k==='news'?'news':'services';title=k==='events'?'الفعاليات والأنشطة':k==='news'?'الأخبار والبيانات':'خدمة المواطنين';html=actList(DB[key])}
  render(title,html)}
-function dept(i){LAST=()=>dept(i);const x=DB.departments[i];render('قسم '+x.name,list([x])+'<h3 style="margin-top:18px">الأخبار والأنشطة</h3>'+actList(x.news),'<button class="back" onclick="show(\'departments\')">← الأقسام</button>')}function goHome(){LAST=null;document.getElementById('detail').classList.add('hidden');document.getElementById('home').classList.remove('hidden');document.getElementById('contact').classList.remove('hidden')}
+const ENT_TITLE={departments:'الأقسام',centers:'المراكز',areas:'المناطق',secretariats:'الأمانات'};
+function entity(key,i){LAST=()=>entity(key,i);const x=DB[key][i];if(!x)return goHome();const fl=x.folders||[];
+ let html=list([x]);
+ if(fl.length)html+=`<h3 style="margin-top:18px">المجلدات</h3><div class="grid">${fl.map((f,j)=>tile(ICONS[f.icon]?f.icon:'folder',f.name||'مجلد',`folder('${key}',${i},${j})`)).join('')}</div>`;
+ if((x.news||[]).length)html+=`<h3 style="margin-top:18px">الأخبار والأنشطة</h3>`+actList(x.news);
+ render((key==='departments'?'قسم ':'')+x.name,html,`<button class="back" onclick="show('${key}')">← ${ENT_TITLE[key]}</button>`)}
+function folder(key,i,j){LAST=()=>folder(key,i,j);const x=DB[key][i],f=x&&(x.folders||[])[j];if(!f)return goHome();
+ render(f.name||'مجلد',actList(f.items),`<button class="back" onclick="entity('${key}',${i})">← ${x.name}</button>`)}
+function dept(i){entity('departments',i)}
+function goHome(){LAST=null;document.getElementById('detail').classList.add('hidden');document.getElementById('home').classList.remove('hidden');document.getElementById('contact').classList.remove('hidden')}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2500)}
 const ADMIN_URL='https://elsayedabosama1-cmyk.github.io/koddi-infographic/tagammu/admin.html';function openAdmin(){if(location.protocol.startsWith('http'))location.href='admin.html';else openUrl(ADMIN_URL)}function openUrl(u){if(/; wv\)/.test(navigator.userAgent))location.href=u;else window.open(u,'_blank','noopener')}function openFb(w){const u=(DB.social||{})[w];if(!u){toast('سيتم إضافة رابط الصفحة قريبًا');return}openUrl(u)}function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function togAct(b){const c=b.closest('.actc');const o=c.classList.toggle('open');b.textContent=o?'عرض أقل':'اقرأ المزيد'}function actList(arr){arr=arr||[];if(!arr.length)return `<div class="items">${empty()}</div>`;return `<div class="items">${arr.map(x=>`<article class="actc${(x.body||[]).length>5?'':' open'}">${x.photo?`<div class="apic">${pic(x.photo)}</div>`:''}<h4>${esc(x.title||x.name||'نشاط')}</h4>${[x.date,x.place].filter(Boolean).length?`<div class="sub">${esc([x.date,x.place].filter(Boolean).join(' — '))}</div>`:''}${x.description?`<p>${esc(x.description)}</p>`:''}${(x.body&&x.body.length)?`<div class="body">${x.body.map(p=>`<p>${esc(p)}</p>`).join('')}</div>${x.body.length>5?`<button class="more" onclick="togAct(this)">اقرأ المزيد</button>`:''}`:''}${x.url?`<button class="fb" style="width:100%;margin-top:10px" onclick="openUrl('${x.url}')">المنشور الأصلي على فيسبوك</button>`:''}</article>`).join('')}</div>`}
 let LAST=null,REMOTE=false;
