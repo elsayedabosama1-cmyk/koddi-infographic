@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "version": 8,
+  "version": 9,
   "updated": "2026-11-12",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -238,6 +238,13 @@
       "folders": [],
       "name": "خطه عمل الامانه ",
       "icon": "star"
+    },
+    {
+      "items": [
+        {}
+      ],
+      "folders": [],
+      "name": "الاجتماع التنظيمي الاول"
     }
   ],
   "governorPhoto": "photos/mwe7gmi9cje.jpg"
