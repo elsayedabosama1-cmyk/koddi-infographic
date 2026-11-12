@@ -219,7 +219,22 @@
       ]
     }
   ],
-  "version": 5,
+  "version": 6,
   "updated": "2026-11-12",
-  "mediaLogo": "photos/media-secretariat.jpg"
+  "mediaLogo": "photos/media-secretariat.jpg",
+  "governorFolders": [],
+  "councilFolders": [],
+  "mediaFolders": [
+    {
+      "items": [
+        {
+          "pdf": "files/mwe40jgbc9s.pdf",
+          "pdfName": "media-plan-gharbia.pdf"
+        }
+      ],
+      "folders": [],
+      "name": "خطه عمل الامانه ",
+      "icon": "star"
+    }
+  ]
 }
