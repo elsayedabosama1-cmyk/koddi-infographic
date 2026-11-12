@@ -97,7 +97,8 @@
   ],
   "advisoryCouncil": {
     "name": "المجلس الاستشاري بالغربية",
-    "chairman": "محمد عبد العظيم"
+    "chairman": "محمد عبد العظيم",
+    "photo": "photos/mwe7gqn6le4.jpg"
   },
   "mediaTeam": [
     {
@@ -219,7 +220,7 @@
       ]
     }
   ],
-  "version": 6,
+  "version": 7,
   "updated": "2026-11-12",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -236,5 +237,6 @@
       "name": "خطه عمل الامانه ",
       "icon": "star"
     }
-  ]
+  ],
+  "governorPhoto": "photos/mwe7gmi9cje.jpg"
 }
