@@ -23,25 +23,30 @@ function sub(k,w){LAST=()=>sub(k,w);const u=unionOf(k),arr=u[w]||[];const back=`
  if(w==='leaders')return render('القيادات',list(arr,'person'),back);
  render('اللجان',arr.length?`<div class="items">${arr.map(c=>`<div class="pc">${icon(ICONS[c.icon]?c.icon:'layers')}<b>${c.name}</b>${c.leader?`<div class="sub">${titled(c.leader,c.g)}</div>`:''}</div>`).join('')}</div>`:`<div class="items">${empty()}</div>`,back)}
 function show(k){LAST=()=>show(k);let title='',html='';
- if(k==='governor'){title='قيادة المحافظة';html=list([{name:'أمين الحزب بمحافظة الغربية',leader:DB.governorateSecretary,photo:DB.governorPhoto}])}
+ if(k==='governor'){title='قيادة المحافظة';html=list([{name:'أمين الحزب بمحافظة الغربية',leader:DB.governorateSecretary,photo:DB.governorPhoto}])+ftiles('governor',DB.governorFolders,'')}
  else if(k==='departments'){title='الأقسام';html=list(DB.departments,'ent:departments')}
  else if(k==='centers'){title='المراكز';html=list(DB.centers,'ent:centers')}
  else if(k==='areas'){title='المناطق';html=list(DB.areas,'ent:areas')}
  else if(k==='secretariats'){title='الأمانات';html=list(DB.secretariats,'ent:secretariats')}
- else if(k==='deputies'){title='نواب الحزب';html=list(DB.deputies,'person')}
- else if(k==='activity'){title='نشاط النائب';html=actList(DB.deputyActivity)}else if(k==='council'){title='المجلس الاستشاري بالغربية';html=list([{name:'رئيس المجلس الاستشاري',leader:DB.advisoryCouncil.chairman,photo:DB.advisoryCouncil.photo}])}
- else if(k==='media'){title='أمانة الإعلام';html=(DB.mediaLogo?`<div class="ulogo">${pic(DB.mediaLogo)}</div>`:'')+list(DB.mediaTeam,'person')+'<div class="section"><h3>ضوابط العمل</h3>'+list((DB.mediaNotes||[]).map(x=>({name:x})),'note')+'</div>'}
- else if(k==='youth'||k==='women'){const u=unionOf(k);title=u.name||'الاتحاد';html=`${u.logo?`<div class="ulogo">${pic(u.logo)}</div>`:''}<div class="grid">${tile('star','القيادات',`sub('${k}','leaders')`)}${tile('layers','اللجان',`sub('${k}','committees')`)}</div>`}
+ else if(k==='deputies'){title='نواب الحزب';html=list(DB.deputies,'person')+ftiles('deputies',DB.deputiesFolders,'')}
+ else if(k==='activity'){title='نشاط النائب';html=actList(DB.deputyActivity)}else if(k==='council'){title='المجلس الاستشاري بالغربية';html=list([{name:'رئيس المجلس الاستشاري',leader:DB.advisoryCouncil.chairman,photo:DB.advisoryCouncil.photo}])+ftiles('council',DB.councilFolders,'')}
+ else if(k==='media'){title='أمانة الإعلام';html=(DB.mediaLogo?`<div class="ulogo">${pic(DB.mediaLogo)}</div>`:'')+ftiles('media',DB.mediaFolders,'')+'<h3 style="margin-top:18px">فريق الأمانة</h3>'+list(DB.mediaTeam,'person')+'<div class="section"><h3>ضوابط العمل</h3>'+list((DB.mediaNotes||[]).map(x=>({name:x})),'note')+'</div>'}
+ else if(k==='youth'||k==='women'){const u=unionOf(k);title=u.name||'الاتحاد';html=`${u.logo?`<div class="ulogo">${pic(u.logo)}</div>`:''}<div class="grid">${tile('star','القيادات',`sub('${k}','leaders')`)}${tile('layers','اللجان',`sub('${k}','committees')`)}</div>${ftiles(k,u.folders,'')}`}
  else{const key=k==='events'?'events':k==='news'?'news':'services';title=k==='events'?'الفعاليات والأنشطة':k==='news'?'الأخبار والبيانات':'خدمة المواطنين';html=actList(DB[key])}
  render(title,html)}
 const ENT_TITLE={departments:'الأقسام',centers:'المراكز',areas:'المناطق',secretariats:'الأمانات'};
-function entity(key,i){LAST=()=>entity(key,i);const x=DB[key][i];if(!x)return goHome();const fl=x.folders||[];
- let html=list([x]);
- if(fl.length)html+=`<h3 style="margin-top:18px">المجلدات</h3><div class="grid">${fl.map((f,j)=>tile(ICONS[f.icon]?f.icon:'folder',f.name||'مجلد',`folder('${key}',${i},${j})`)).join('')}</div>`;
+function fcont(ctx){if(ctx==='media')return DB.mediaFolders;if(ctx==='youth'||ctx==='women')return unionOf(ctx).folders;if(ctx==='deputies')return DB.deputiesFolders;if(ctx==='council')return DB.councilFolders;if(ctx==='governor')return DB.governorFolders;const m=ctx.split(':');const x=(DB[m[1]]||[])[+m[2]];return x&&x.folders}
+function fnode(ctx,path){let arr=fcont(ctx)||[],n=null;for(const ix of String(path).split('.').filter(v=>v!=='')){n=arr[+ix];if(!n)return null;arr=n.folders||[]}return n}
+function ftiles(ctx,arr,pre){arr=arr||[];return arr.length?`<h3 style="margin-top:18px">المجلدات</h3><div class="grid">${arr.map((f,j)=>tile(ICONS[f.icon]?f.icon:'folder',f.name||'مجلد',`fol('${ctx}','${pre?pre+'.':''}${j}')`)).join('')}</div>`:''}
+function ctxBack(ctx){if(ctx.startsWith('ent:')){const m=ctx.split(':');entity(m[1],+m[2])}else show(ctx)}
+function fol(ctx,path){LAST=()=>fol(ctx,path);const n=fnode(ctx,path);if(!n)return goHome();const up=String(path).split('.').slice(0,-1).join('.');
+ const back=up?`<button class="back" onclick="fol('${ctx}','${up}')">← رجوع</button>`:`<button class="back" onclick="ctxBack('${ctx}')">← رجوع</button>`;
+ const sub=n.folders||[],its=n.items||[];
+ render(n.name||'مجلد',ftiles(ctx,sub,path)+(its.length?actList(its):(sub.length?'':`<div class="items">${empty()}</div>`)),back)}
+function entity(key,i){LAST=()=>entity(key,i);const x=DB[key][i];if(!x)return goHome();
+ let html=list([x])+ftiles('ent:'+key+':'+i,x.folders,'');
  if((x.news||[]).length)html+=`<h3 style="margin-top:18px">الأخبار والأنشطة</h3>`+actList(x.news);
  render((key==='departments'?'قسم ':'')+x.name,html,`<button class="back" onclick="show('${key}')">← ${ENT_TITLE[key]}</button>`)}
-function folder(key,i,j){LAST=()=>folder(key,i,j);const x=DB[key][i],f=x&&(x.folders||[])[j];if(!f)return goHome();
- render(f.name||'مجلد',actList(f.items),`<button class="back" onclick="entity('${key}',${i})">← ${x.name}</button>`)}
 function dept(i){entity('departments',i)}
 function goHome(){LAST=null;document.getElementById('detail').classList.add('hidden');document.getElementById('home').classList.remove('hidden');document.getElementById('contact').classList.remove('hidden')}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2500)}
