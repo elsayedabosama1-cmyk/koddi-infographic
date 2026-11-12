@@ -137,12 +137,32 @@ function photoField(label,obj,k){
   return h('div',{class:'f'},h('span',{},label),img,inp,' ',btn('إزالة الصورة',()=>{delete obj[k];upd();mark()}));
 }
 
+function pdfField(label,obj,k){
+  const st=h('div',{class:'hint'});
+  const upd=()=>{st.textContent=obj[k]?('الملف الحالي: '+(obj.pdfName||obj[k])):'لا يوجد ملف مرفق'};
+  const inp=h('input',{type:'file',accept:'application/pdf,.pdf'});
+  inp.addEventListener('change',async()=>{
+    const f=inp.files[0];if(!f)return;
+    if(f.size>20*1024*1024){alert('حجم الملف أكبر من 20 ميجا. صغّره وجرّب تاني.');inp.value='';return}
+    busy(true);
+    try{
+      const d=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('تعذّر قراءة الملف'));r.readAsDataURL(f)});
+      const path='files/'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'.pdf';
+      await gh('PUT','contents/'+path,{message:'Add pdf',content:d.split(',')[1],branch:BRANCH});
+      obj[k]=path;obj.pdfName=f.name;upd();mark();toast('تم رفع الملف');
+    }catch(e){fail(e)}
+    busy(false);
+  });
+  upd();
+  return h('div',{class:'f'},h('span',{},label),st,inp,' ',btn('إزالة الملف',()=>{delete obj[k];delete obj.pdfName;upd();mark()}));
+}
 /* ---------- generic form ---------- */
 const ICONS=[['landmark','مبنى بأعمدة'],['grid','مربعات'],['building','مبنى'],['pin','موقع'],['folder','ملف'],['users','أشخاص'],['megaphone','ميكروفون صوت'],['scale','ميزان'],['mic','ميكروفون'],['flag','علم'],['venus','رمز نسائي'],['calendar','تقويم'],['newspaper','جريدة'],['clip','قائمة مهام'],['star','نجمة'],['layers','طبقات']];
 function field(f,obj){
   const [k,label,type,extra]=f;
   if(type==='list')return listEditor(label,obj,k,extra,{top:f[4]});
   if(type==='photo')return photoField(label,obj,k);
+  if(type==='pdf')return pdfField(label,obj,k);
   const w=h('label',{class:'f'},h('span',{},label));
   let el;
   if(type==='area'||type==='body'){
@@ -190,7 +210,7 @@ function listEditor(title,obj,k,schema,opts={}){
 
 /* ---------- tabs ---------- */
 const PERSON=[['name','الاسم'],['role','المنصب / الوصف'],['g','النوع (للقب أستاذ / أستاذة)','g'],['photo','صورة شخصية','photo']];
-const NEWS=[['title','العنوان'],['date','التاريخ (مثال: 12 نوفمبر 2026)'],['body','النص (كل سطر = فقرة)','body'],['photo','صورة','photo'],['url','رابط خارجي (اختياري)']];
+const NEWS=[['title','العنوان'],['date','التاريخ (مثال: 12 نوفمبر 2026)'],['body','النص (كل سطر = فقرة)','body'],['photo','صورة','photo'],['pdf','ملف PDF (اختياري)','pdf'],['url','رابط خارجي (اختياري)']];
 const FOLDER=[['name','اسم المجلد'],['icon','الأيقونة','icon'],['items','محتوى المجلد (منشورات)','list',NEWS,true]];
 const ENT=[['name','الاسم'],['leader','الأمين / المسؤول'],['g','النوع','g'],['photo','صورة المسؤول','photo'],['notes','ملاحظات','area'],['folders','المجلدات','list',FOLDER]];
 const TABS=[
