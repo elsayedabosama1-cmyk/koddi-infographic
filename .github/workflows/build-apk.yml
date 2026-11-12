@@ -1,6 +1,7 @@
 name: Build APK
 on:
   push:
+    paths-ignore: ['data/**','photos/**']
   workflow_dispatch:
 permissions:
   contents: write
