@@ -34,7 +34,9 @@
   "centers": [
     {
       "name": "مركز المحلة الكبرى",
-      "leader": "إسلام الرجبي"
+      "leader": "إسلام الرجبي",
+      "folders": [],
+      "photo": "photos/mwe7gzeqt94.jpg"
     }
   ],
   "areas": [
@@ -220,7 +222,7 @@
       ]
     }
   ],
-  "version": 7,
+  "version": 8,
   "updated": "2026-11-12",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
