@@ -216,6 +216,7 @@ FOLDER.push(['folders','مجلدات فرعية داخل هذا المجلد','l
 const ENT=[['name','الاسم'],['leader','الأمين / المسؤول'],['g','النوع','g'],['photo','صورة المسؤول','photo'],['notes','ملاحظات','area'],['folders','المجلدات','list',FOLDER]];
 const TABS=[
  {id:'general',t:'عام'},
+ {id:'homefolders',t:'مجلدات الرئيسية'},
  {id:'departments',t:'الأقسام',list:'departments',schema:[...ENT,['news','أخبار القسم (تظهر تحت المجلدات)','list',NEWS,true]]},
  {id:'centers',t:'المراكز',list:'centers',schema:ENT},
  {id:'areas',t:'المناطق',list:'areas',schema:[...ENT,['subareas','مناطق فرعية (افصل بفاصلة)','tags']]},
@@ -232,6 +233,10 @@ const TABS=[
 function drawTabs(){const n=$('#tabs');n.replaceChildren();TABS.forEach(t=>n.append(h('button',{type:'button',class:t.id===cur?'on':'',on:{click:()=>{cur=t.id;drawTabs();drawPane();scrollTo(0,0)}}},t.t)))}
 function drawPane(){
   const p=$('#pane');p.replaceChildren();const t=TABS.find(x=>x.id===cur);
+  if(t.id==='homefolders'){
+    p.append(h('div',{class:'sec'},h('h3',{},'مجلدات الصفحة الرئيسية'),h('p',{class:'hint'},'المجلدات دي بتظهر كمربعات في الصفحة الرئيسية بعد المربعات الأساسية. تقدر تعمل بأي عدد، ومجلدات داخل مجلدات.'),listEditor('',DB,'homeFolders',FOLDER)));
+    return;
+  }
   if(t.id==='general'){
     p.append(h('div',{class:'sec'},h('h3',{},'القيادة'),
       field(['governorateSecretary','اسم أمين الحزب بمحافظة الغربية'],DB),field(['governorPhoto','صورة أمين المحافظة','photo'],DB),
