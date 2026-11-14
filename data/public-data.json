@@ -222,8 +222,8 @@
       ]
     }
   ],
-  "version": 9,
-  "updated": "2026-11-12",
+  "version": 10,
+  "updated": "2026-11-14",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
   "councilFolders": [],
@@ -247,5 +247,14 @@
       "name": "الاجتماع التنظيمي الاول"
     }
   ],
-  "governorPhoto": "photos/mwe7gmi9cje.jpg"
+  "governorPhoto": "photos/mwe7gmi9cje.jpg",
+  "homeFolders": [
+    {
+      "items": [
+        {}
+      ],
+      "folders": [],
+      "name": "اللائحه الحزبيه"
+    }
+  ]
 }
