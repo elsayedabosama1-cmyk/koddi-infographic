@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "version": 13,
+  "version": 14,
   "updated": "2026-11-14",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -276,5 +276,10 @@
       ],
       "folders": []
     }
-  ]
+  ],
+  "texts": {
+    "tiles": {},
+    "footer": "امانه الإعلام بالغربيه",
+    "subtitle": "محافظة الغربية-أمانة الاعلام"
+  }
 }
