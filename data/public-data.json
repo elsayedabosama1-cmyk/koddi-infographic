@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "version": 12,
+  "version": 13,
   "updated": "2026-11-14",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -251,7 +251,11 @@
   "homeFolders": [
     {
       "items": [
-        {}
+        {
+          "body": [],
+          "date": "3 مارس 2018",
+          "title": "لائحه حزب التجمع "
+        }
       ],
       "folders": [],
       "name": "اللائحه الحزبيه"
