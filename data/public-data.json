@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "version": 14,
+  "version": 15,
   "updated": "2026-11-14",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -252,13 +252,18 @@
     {
       "items": [
         {
+          "pdf": "files/mwger0i7d7r.pdf",
+          "pdfName": "لائحة النظام الاساسي - حزب التجمع مارس 2018.pdf"
+        },
+        {
           "body": [],
           "date": "3 مارس 2018",
           "title": "لائحه حزب التجمع "
         }
       ],
       "folders": [],
-      "name": "اللائحه الحزبيه"
+      "name": "اللائحه الحزبيه",
+      "icon": "folder"
     },
     {
       "items": [
