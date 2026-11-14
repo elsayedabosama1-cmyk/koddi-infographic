@@ -183,7 +183,7 @@ function field(f,obj){
     el.addEventListener('change',()=>{obj[k]=el.checked;mark()});
     return h('label',{class:'f'},el,' ',label);
   }else{
-    el=h('input',{type:'text',value:obj[k]||''});
+    el=h('input',{type:'text',value:obj[k]||'',placeholder:extra||''});
     el.addEventListener('input',()=>{if(el.value)obj[k]=el.value;else delete obj[k];mark()});
   }
   w.append(el);return w;
@@ -238,6 +238,14 @@ function drawPane(){
     return;
   }
   if(t.id==='general'){
+    DB.texts=DB.texts||{};DB.texts.tiles=DB.texts.tiles||{};
+    const T=DB.texts,TL=DB.texts.tiles;
+    p.append(h('div',{class:'sec'},h('h3',{},'نصوص التطبيق'),h('p',{class:'hint'},'اكتب النص الجديد، وسيب الخانة فاضية لو عايز النص الأصلي (الظاهر باهت جواها).'),
+      field(['title','العنوان الرئيسي في الهيدر','text','حزب التجمع الوطني التقدمي الوحدوي'],T),
+      field(['subtitle','السطر تحت العنوان','text','بمحافظة الغربية'],T),
+      field(['footer','نص أسفل الصفحة','text','حزب التجمع الوطني التقدمي الوحدوي — محافظة الغربية'],T)));
+    p.append(h('div',{class:'sec'},h('h3',{},'أسماء المربعات في الصفحة الرئيسية'),
+      [['governor','قيادة المحافظة'],['departments','الأقسام'],['centers','المراكز'],['areas','المناطق'],['secretariats','الأمانات'],['deputies','نواب الحزب'],['activity','نشاط النائب'],['council','المجلس الاستشاري'],['media','أمانة الإعلام'],['youth','اتحاد الشباب التقدمي'],['women','الاتحاد النسائي'],['events','الفعاليات'],['news','الأخبار والبيانات'],['services','خدمة المواطنين']].map(([k,d])=>field([k,d,'text',d],TL))));
     p.append(h('div',{class:'sec'},h('h3',{},'القيادة'),
       field(['governorateSecretary','اسم أمين الحزب بمحافظة الغربية'],DB),field(['governorPhoto','صورة أمين المحافظة','photo'],DB),
       field(['chairman','رئيس المجلس الاستشاري'],DB.advisoryCouncil),field(['photo','صورة رئيس المجلس','photo'],DB.advisoryCouncil)));
