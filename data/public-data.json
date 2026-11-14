@@ -222,7 +222,7 @@
       ]
     }
   ],
-  "version": 11,
+  "version": 12,
   "updated": "2026-11-14",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -257,7 +257,19 @@
       "name": "اللائحه الحزبيه"
     },
     {
-      "items": [],
+      "items": [
+        {
+          "pdf": "files/mwgeaidthhs.pdf",
+          "pdfName": "لائحة النظام الاساسي - حزب التجمع مارس 2018.pdf",
+          "body": [
+            "لحزب التجمع",
+            "الصادرة عن المؤتمر العام الطارئ",
+            "3 مارس 2018"
+          ],
+          "title": "لحزب التجمع الصادرة عن المؤتمر العام الطارئ   ",
+          "date": "3 مارس 2018"
+        }
+      ],
       "folders": []
     }
   ]
