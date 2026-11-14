@@ -8,6 +8,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.Manifest;
+import android.os.Build;
+import androidx.work.*;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
     private WebView web;
@@ -15,6 +19,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED)
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("check", ExistingPeriodicWorkPolicy.KEEP,
+            new PeriodicWorkRequest.Builder(CheckWorker.class, 15, TimeUnit.MINUTES)
+                .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).build());
         web = new WebView(this);
         setContentView(web);
         WebSettings s = web.getSettings();
