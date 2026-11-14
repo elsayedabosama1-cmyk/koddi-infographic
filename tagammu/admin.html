@@ -202,7 +202,7 @@ function listEditor(title,obj,k,schema,opts={}){
       if(i===open)det.open=true;box.append(det);
     });
   };
-  const add=h('button',{type:'button',class:'add',on:{click:()=>{const n={};let idx;if(opts.top){obj[k].unshift(n);idx=0}else{obj[k].push(n);idx=obj[k].length-1}mark();draw(idx)}}},'+ إضافة');
+  const add=h('button',{type:'button',class:'add',on:{click:()=>{const n={ts:Date.now()};let idx;if(opts.top){obj[k].unshift(n);idx=0}else{obj[k].push(n);idx=obj[k].length-1}mark();draw(idx)}}},'+ إضافة');
   draw();
   const w=h('div',{class:'f'},title?h('span',{},title+':'):null,box,add);
   return w;
