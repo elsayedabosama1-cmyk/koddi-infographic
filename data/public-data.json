@@ -321,7 +321,7 @@
       ]
     }
   ],
-  "version": 22,
+  "version": 23,
   "updated": "2026-11-16",
   "mediaLogo": "photos/media-secretariat.jpg",
   "governorFolders": [],
@@ -361,7 +361,9 @@
             "#المنصات_الرقمية",
             "#التواصل_المجتمعي"
           ],
-          "photo": "photos/mwjti6nxfg1.jpg"
+          "photo": "photos/mwjti6nxfg1.jpg",
+          "date": "13نوفمبر2026",
+          "title": "التواصل الرقمي "
         }
       ],
       "folders": [],
