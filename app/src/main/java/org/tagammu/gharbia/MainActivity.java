@@ -29,9 +29,11 @@ public class MainActivity extends Activity {
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
+        android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                if (!r.isForMainFrame()) return false;
                 Uri u = r.getUrl();
                 if ("file".equals(u.getScheme())) return false;
                 startActivity(new Intent(Intent.ACTION_VIEW, u));
