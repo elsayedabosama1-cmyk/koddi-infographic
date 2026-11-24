@@ -93,7 +93,7 @@ async function gh(method,path,body){
 const b64d=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g,'')),c=>c.charCodeAt(0)));
 const b64e=t=>{const b=new TextEncoder().encode(t);let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(s)};
 
-function norm(d){d.social=d.social||{};d.advisoryCouncil=d.advisoryCouncil||{};['departments','centers','areas','secretariats','deputies','mediaTeam','unions','events','news','services','deputyActivity'].forEach(k=>d[k]=d[k]||[]);return d}
+function norm(d){d.social=d.social||{};d.socialEmbed=d.socialEmbed||{};d.advisoryCouncil=d.advisoryCouncil||{};['departments','centers','areas','secretariats','deputies','mediaTeam','unions','events','news','services','deputyActivity'].forEach(k=>d[k]=d[k]||[]);return d}
 let BASEK={};
 function snap(d){BASEK={};Object.keys(d).forEach(k=>BASEK[k]=JSON.stringify(d[k]))}
 async function load(){
@@ -252,7 +252,7 @@ function drawPane(){
     p.append(h('div',{class:'sec'},h('h3',{},'مجلدات صفحة قيادة المحافظة'),listEditor('',DB,'governorFolders',FOLDER)));
     p.append(h('div',{class:'sec'},h('h3',{},'مجلدات المجلس الاستشاري'),listEditor('',DB,'councilFolders',FOLDER)));
     p.append(h('div',{class:'sec'},h('h3',{},'روابط فيسبوك'),h('p',{class:'hint'},'الصق رابط الصفحة كاملًا، يبدأ بـ https://'),
-      field(['party','رابط صفحة الحزب بالغربية'],DB.social),field(['deputy','رابط صفحة النائب'],DB.social)));
+      field(['party','رابط صفحة الحزب بالغربية'],DB.social),field(['deputy','رابط صفحة النائب'],DB.social),h('p',{class:'hint'},'عشان آخر المنشورات تظهر جوه التطبيق: افتح الصفحة في المتصفح والصق هنا الرابط اللي في شريط العنوان (مش رابط المشاركة)، زي https://www.facebook.com/اسم-الصفحة. الصفحة لازم تكون عامة.'),field(['party','رابط الصفحة الأصلي للإطار (الحزب)'],DB.socialEmbed),field(['deputy','رابط الصفحة الأصلي للإطار (النائب)'],DB.socialEmbed)));
     return;
   }
   if(t.union){
