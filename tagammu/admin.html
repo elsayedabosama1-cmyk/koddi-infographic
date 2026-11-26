@@ -131,6 +131,15 @@ async function login(t){
 /* ---------- photos ---------- */
 function resize(file,max=800){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{let w=im.naturalWidth,hh=im.naturalHeight;const s=Math.min(1,max/Math.max(w,hh));w=Math.round(w*s);hh=Math.round(hh*s);const c=document.createElement('canvas');c.width=w;c.height=hh;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,hh);x.drawImage(im,0,0,w,hh);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.86))};im.onerror=()=>rej(new Error('تعذّر قراءة الصورة'));im.src=u})}
 async function uploadPhoto(file){const d=await resize(file);const path='photos/'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'.jpg';await gh('PUT','contents/'+path,{message:'Add photo',content:d.split(',')[1],branch:BRANCH});return{path,url:d}}
+async function uploadBatch(files,onOne){
+  const done=[];const ents=[];
+  for(let i=0;i<files.length;i++){if(i)await new Promise(z=>setTimeout(z,600));const d=await resize(files[i]);const path='photos/'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'.jpg';
+    const bl=await gh('POST','git/blobs',{content:d.split(',')[1],encoding:'base64'});ents.push({path,mode:'100644',type:'blob',sha:bl.sha});done.push({path,url:d});if(onOne)onOne(i+1)}
+  const ref=await gh('GET','git/ref/heads/'+BRANCH),cm=await gh('GET','git/commits/'+ref.object.sha);
+  const tr=await gh('POST','git/trees',{base_tree:cm.tree.sha,tree:ents});
+  const nc=await gh('POST','git/commits',{message:'Add '+ents.length+' photos',tree:tr.sha,parents:[ref.object.sha]});
+  await gh('PATCH','git/ref/heads/'+BRANCH,{sha:nc.sha});
+  return done}
 function photoField(label,obj,k){
   const img=h('img',{class:'th',alt:''});
   const upd=()=>{const p=obj[k];if(p){img.src=PREV[p]||('https://raw.githubusercontent.com/'+OWNER+'/'+REPO+'/'+BRANCH+'/'+p);img.hidden=false}else img.hidden=true};
@@ -149,8 +158,11 @@ function photosField(label,obj,k){
     up=i>0?h('button',{type:'button',on:{click:()=>{const t=obj.photos[i-1];obj.photos[i-1]=obj.photos[i];obj.photos[i]=t;sync();draw();mark()}},style:'display:block;margin:2px auto;font-size:.75rem'},'قدّم'):'';
     row.append(h('div',{style:'text-align:center'},im,x,up))});cnt.textContent=(obj.photos||[]).length?('عدد الصور: '+obj.photos.length+' (الأولى هي الغلاف)'):'لا توجد صور'};
   const inp=h('input',{type:'file',accept:'image/*',multiple:'multiple'});
-  inp.addEventListener('change',async()=>{const fs=[...inp.files];if(!fs.length)return;busy(true);let n=0;
-    try{for(const f of fs){if(n)await new Promise(z=>setTimeout(z,700));const r=await uploadPhoto(f);PREV[r.path]=r.url;(obj.photos=obj.photos||[]).push(r.path);n++;sync();if(!obj.photos)obj.photos=[];draw()}mark()}catch(e){fail(e)}
+  inp.addEventListener('change',async()=>{const fs=[...inp.files];if(!fs.length)return;busy(true);let tot=0;
+    try{for(let i=0;i<fs.length;i+=25){const part=fs.slice(i,i+25),base=i;
+      const rs=await uploadBatch(part,c=>{cnt.textContent='جاري رفع الصور: '+(base+c)+' من '+fs.length+' ... متقفلش الصفحة'});
+      rs.forEach(r=>{PREV[r.path]=r.url;(obj.photos=obj.photos||[]).push(r.path);tot++});sync();if(!obj.photos)obj.photos=[];draw();mark()}}
+    catch(e){fail(e);if(tot)alert('اترفع '+tot+' صورة قبل الخطأ. شوف اللي اتضاف وكمّل الباقي.');draw()}
     inp.value='';busy(false)});
   draw();box.append(cnt,row,inp);return box;
 }
