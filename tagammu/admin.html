@@ -137,6 +137,21 @@ function photoField(label,obj,k){
   return h('div',{class:'f'},h('span',{},label),img,inp,' ',btn('إزالة الصورة',()=>{delete obj[k];upd();mark()}));
 }
 
+function photosField(label,obj,k){
+  if(!Array.isArray(obj.photos))obj.photos=obj.photo?[obj.photo]:[];
+  const box=h('div',{class:'f'},h('span',{},label)),row=h('div',{style:'display:flex;flex-wrap:wrap;gap:8px;margin:6px 0'}),cnt=h('div',{class:'hint'});
+  const sync=()=>{obj.photo=obj.photos[0]||'';if(!obj.photo)delete obj.photo;if(!obj.photos.length)delete obj.photos};
+  const draw=()=>{row.innerHTML='';(obj.photos||[]).forEach((p,i)=>{const im=h('img',{class:'th',alt:'',src:PREV[p]||('https://raw.githubusercontent.com/'+OWNER+'/'+REPO+'/'+BRANCH+'/'+p)});
+    const x=h('button',{type:'button',on:{click:()=>{obj.photos.splice(i,1);sync();if(!obj.photos)obj.photos=[];draw();mark()}},style:'display:block;margin:2px auto;font-size:.75rem'},'حذف'),
+    up=i>0?h('button',{type:'button',on:{click:()=>{const t=obj.photos[i-1];obj.photos[i-1]=obj.photos[i];obj.photos[i]=t;sync();draw();mark()}},style:'display:block;margin:2px auto;font-size:.75rem'},'قدّم'):'';
+    row.append(h('div',{style:'text-align:center'},im,x,up))});cnt.textContent=(obj.photos||[]).length?('عدد الصور: '+obj.photos.length+' (الأولى هي الغلاف)'):'لا توجد صور'};
+  const inp=h('input',{type:'file',accept:'image/*',multiple:'multiple'});
+  inp.addEventListener('change',async()=>{const fs=[...inp.files];if(!fs.length)return;busy(true);let n=0;
+    try{for(const f of fs){const r=await uploadPhoto(f);PREV[r.path]=r.url;(obj.photos=obj.photos||[]).push(r.path);n++;sync();if(!obj.photos)obj.photos=[];draw()}mark()}catch(e){fail(e)}
+    inp.value='';busy(false)});
+  draw();box.append(cnt,row,inp);return box;
+}
+
 function pdfField(label,obj,k){
   const st=h('div',{class:'hint'});
   const upd=()=>{st.textContent=obj[k]?('الملف الحالي: '+(obj.pdfName||obj[k])):'لا يوجد ملف مرفق'};
@@ -162,6 +177,7 @@ function field(f,obj){
   const [k,label,type,extra]=f;
   if(type==='list')return listEditor(label,obj,k,extra,{top:f[4]});
   if(type==='photo')return photoField(label,obj,k);
+  if(type==='photos')return photosField(label,obj,k);
   if(type==='pdf')return pdfField(label,obj,k);
   const w=h('label',{class:'f'},h('span',{},label));
   let el;
@@ -210,7 +226,7 @@ function listEditor(title,obj,k,schema,opts={}){
 
 /* ---------- tabs ---------- */
 const PERSON=[['name','الاسم'],['role','المنصب / الوصف'],['g','النوع (للقب أستاذ / أستاذة)','g'],['photo','صورة شخصية','photo']];
-const NEWS=[['title','العنوان'],['date','التاريخ (مثال: 12 نوفمبر 2026)'],['body','النص (كل سطر = فقرة)','body'],['photo','صورة','photo'],['pdf','ملف مرفق (PDF أو Word أو Excel)','pdf'],['url','رابط خارجي (اختياري)']];
+const NEWS=[['title','العنوان'],['date','التاريخ (مثال: 12 نوفمبر 2026)'],['body','النص (كل سطر = فقرة)','body'],['photos','الصور (اختار أكتر من صورة مرة واحدة، من غير حد أقصى)','photos'],['pdf','ملف مرفق (PDF أو Word أو Excel)','pdf'],['url','رابط خارجي (اختياري)']];
 const FOLDER=[['name','اسم المجلد'],['icon','الأيقونة','icon'],['items','المحتوى (منشورات وملفات)','list',NEWS,true]];
 FOLDER.push(['folders','مجلدات فرعية داخل هذا المجلد','list',FOLDER]);
 const ENT=[['name','الاسم'],['leader','الأمين / المسؤول'],['g','النوع','g'],['photo','صورة المسؤول','photo'],['notes','ملاحظات','area'],['folders','المجلدات','list',FOLDER]];
