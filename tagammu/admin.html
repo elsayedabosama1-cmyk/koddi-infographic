@@ -81,13 +81,16 @@ function h(t,a,...k){const e=document.createElement(t);for(const[n,v]of Object.e
 const btn=(t,f,c)=>h('button',{type:'button',class:c||'sm',on:{click:f}},t);
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3500)}
 function busy(b){$('#busy').style.display=b?'flex':'none'}
-function fail(e){const m=e.status===401?'المفتاح غير صالح أو منتهي':e.status===403?'المفتاح لا يملك صلاحية كافية':e.status===404?'لم يتم العثور على الملف أو المستودع':(e.msg||e.message||'حدث خطأ');alert('تعذّر التنفيذ: '+m)}
+function fail(e){const m=e.status===401?'المفتاح غير صالح أو منتهي':e.status===403?(/rate limit|secondary|abuse/i.test(e.msg||'')?'GitHub حدّ سرعة الرفع، استنى دقيقة وجرّب تاني (ارفع صور أقل في المرة)':'المفتاح لا يملك صلاحية كافية'+(e.msg?' ('+e.msg+')':'')):e.status===404?'لم يتم العثور على الملف أو المستودع':(e.msg||e.message||'حدث خطأ');alert('تعذّر التنفيذ: '+m)}
 function mark(on=true){dirty=on;const s=$('#st');s.textContent=on?'تغييرات غير محفوظة':'محفوظ';s.className=on?'dirty':''}
 addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 
-async function gh(method,path,body){
+async function gh(method,path,body,_try){
+  _try=_try||0;
   const r=await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+(path?'/'+path:''),{method,headers:{Authorization:'Bearer '+TOK,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-  if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;try{e.msg=(await r.json()).message}catch(_){}throw e}
+  if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;try{e.msg=(await r.json()).message}catch(_){}
+    if((r.status===403||r.status===429)&&/rate limit|secondary|abuse|retry/i.test(e.msg||'')&&_try<3){const w=(parseInt(r.headers.get('retry-after'))||20)*1000;await new Promise(z=>setTimeout(z,Math.min(w,60000)));return gh(method,path,body,_try+1)}
+    throw e}
   return r.json();
 }
 const b64d=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g,'')),c=>c.charCodeAt(0)));
@@ -147,7 +150,7 @@ function photosField(label,obj,k){
     row.append(h('div',{style:'text-align:center'},im,x,up))});cnt.textContent=(obj.photos||[]).length?('عدد الصور: '+obj.photos.length+' (الأولى هي الغلاف)'):'لا توجد صور'};
   const inp=h('input',{type:'file',accept:'image/*',multiple:'multiple'});
   inp.addEventListener('change',async()=>{const fs=[...inp.files];if(!fs.length)return;busy(true);let n=0;
-    try{for(const f of fs){const r=await uploadPhoto(f);PREV[r.path]=r.url;(obj.photos=obj.photos||[]).push(r.path);n++;sync();if(!obj.photos)obj.photos=[];draw()}mark()}catch(e){fail(e)}
+    try{for(const f of fs){if(n)await new Promise(z=>setTimeout(z,700));const r=await uploadPhoto(f);PREV[r.path]=r.url;(obj.photos=obj.photos||[]).push(r.path);n++;sync();if(!obj.photos)obj.photos=[];draw()}mark()}catch(e){fail(e)}
     inp.value='';busy(false)});
   draw();box.append(cnt,row,inp);return box;
 }
